@@ -27,5 +27,7 @@
   },
   "homepage": "https://github.com/NikolayBorisov/redux-state-connect#readme",
   "dependencies": {
+  },
+  "devDependencies": {
   }
 }
