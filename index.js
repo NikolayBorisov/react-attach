@@ -19,7 +19,7 @@ export function connect(stateMap, component) {
   if (!isFunction(stateMap)) return console.error(ERROR_CONNECT_ARG1_FUNC);
 
   const curIndex = index;
-  index += index;
+  index += 1;
 
   subscribers[curIndex] = {
     stateMap,
@@ -46,7 +46,7 @@ export function dispatchify(dispatchMap, obj) {
 
   Object.keys(dispatchMap).forEach((key) => {
     obj[key] = (...args) => store.dispatch(dispatchMap[key](...args));
-  });
+});
 }
 
 export function init(s) {
@@ -55,18 +55,18 @@ export function init(s) {
   store.subscribe(() => {
     const newState = store.getState();
 
-    Object.keys(subscribers).forEach((key) => {
-      const subscriber = subscribers[key];
-      const component = subscriber.component;
-      const mapState = subscriber.stateMap(newState);
+  Object.keys(subscribers).forEach((key) => {
+    const subscriber = subscribers[key];
+  const component = subscriber.component;
+  const mapState = subscriber.stateMap(newState);
 
-      if (isFunction(component)) {
-        component(mapState);
-      } else {
-        component.setState(mapState);
-      }
-    });
-  });
+  if (isFunction(component)) {
+    component(mapState);
+  } else {
+    component.setState(mapState);
+  }
+});
+});
 
   return connect;
 }
