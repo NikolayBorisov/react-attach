@@ -65,9 +65,16 @@ export function mapDispatchToThis(dispatchMap, obj) {
     return;
   }
 
-  Object.keys(dispatchMap).forEach((key) => {
-    component[key] = (...args) => store.dispatch(dispatchMap[key](...args));
-  });
+  if (isFunction(dispatchMap)) {
+    const fns = dispatchMap(store.dispatch);
+    Object.keys(fns).forEach((key) => {
+      component[key] = fns[key];
+    });
+  } else {
+    Object.keys(dispatchMap).forEach((key) => {
+      component[key] = (...args) => store.dispatch(dispatchMap[key](...args));
+    });
+  }
 }
 
 
