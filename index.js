@@ -7,47 +7,92 @@ const ERROR_CONNECT_ARG2_FUNC_OR_THIS = 'Second argument in [connect] must be a 
 const ERROR_CONNECT_ARG1_FUNC = 'First argument in [connect] must be a function.';
 const ERROR_DISPACTHIFY_ARG2_OBJECT = 'Second argument in [dispatchify] must be an object.';
 
+const noop = () => {};
+
 function isFunction(x) {
   return typeof x === 'function';
 }
 
-export function connect(stateMap, component) {
-  if (!store) return console.error(ERROR_INIT);
-  if (!component || (!isFunction(component) && !isFunction(component.setState))) {
-    return console.error(ERROR_CONNECT_ARG2_FUNC_OR_THIS);
+
+export function mapStoreToState(storeMap, obj) {
+  const component = obj;
+
+  if (!store) {
+    console.error(ERROR_INIT);
+    return noop;
   }
-  if (!isFunction(stateMap)) return console.error(ERROR_CONNECT_ARG1_FUNC);
+  if (!component || (!isFunction(component) && !isFunction(component.setState))) {
+    console.error(ERROR_CONNECT_ARG2_FUNC_OR_THIS);
+    return noop;
+  }
+  if (!isFunction(storeMap)) {
+    console.error(ERROR_CONNECT_ARG1_FUNC);
+    return noop;
+  }
 
   const curIndex = index;
   index += 1;
 
   subscribers[curIndex] = {
-    stateMap,
+    storeMap,
     component,
   };
 
   const newState = store.getState();
-  const mapState = stateMap(newState);
+  const mapState = storeMap(newState);
 
   if (isFunction(component)) {
     component(mapState);
   } else {
-    component.setState(mapState);
+    Object.assign(component.state, mapState);
   }
 
-  return function disconnect() {
+  return function detach() {
     delete subscribers[curIndex];
   };
 }
 
-export function dispatchify(dispatchMap, obj) {
-  if (!store) return console.error(ERROR_INIT);
-  if (!obj) return console.error(ERROR_DISPACTHIFY_ARG2_OBJECT);
+
+export function mapDispatchToThis(dispatchMap, obj) {
+  const component = obj;
+
+  if (!store) {
+    console.error(ERROR_INIT);
+    return;
+  }
+  if (!component) {
+    console.error(ERROR_DISPACTHIFY_ARG2_OBJECT);
+    return;
+  }
 
   Object.keys(dispatchMap).forEach((key) => {
-    obj[key] = (...args) => store.dispatch(dispatchMap[key](...args));
-});
+    component[key] = (...args) => store.dispatch(dispatchMap[key](...args));
+  });
 }
+
+
+export const attach = (stateMap, dispatchMap) => WrappedComponent => (
+  class Attach extends WrappedComponent {
+    constructor(props) {
+      super(props);
+      this.constructor.displayName = `Attach(${super.constructor.name})`;
+      this.detach = mapStoreToState(stateMap, this);
+      mapDispatchToThis(dispatchMap, this);
+    }
+
+    componentWillUnmount() {
+      if (super.componentWillUnmount) {
+        super.componentWillUnmount();
+      }
+      this.detach();
+    }
+
+    render() {
+      return super.render();
+    }
+  }
+);
+
 
 export function init(s) {
   store = s;
@@ -55,25 +100,26 @@ export function init(s) {
   store.subscribe(() => {
     const newState = store.getState();
 
-  Object.keys(subscribers).forEach((key) => {
-    const subscriber = subscribers[key];
-  const component = subscriber.component;
-  const mapState = subscriber.stateMap(newState);
+    Object.keys(subscribers).forEach((key) => {
+      const subscriber = subscribers[key];
+      const component = subscriber.component;
+      const mapState = subscriber.storeMap(newState);
 
-  if (isFunction(component)) {
-    component(mapState);
-  } else {
-    component.setState(mapState);
-  }
-});
-});
+      if (isFunction(component)) {
+        component(mapState);
+      } else {
+        component.setState(mapState);
+      }
+    });
+  });
 
-  return connect;
+  return attach;
 }
 
 
 export default {
   init,
-  connect,
-  dispatchify,
+  mapStoreToState,
+  mapDispatchToThis,
+  attach,
 };

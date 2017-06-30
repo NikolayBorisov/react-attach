@@ -1,19 +1,20 @@
 {
-  "name": "redux-state-connect",
-  "version": "1.0.0",
-  "description": "Help to connect to native React Component State",
+  "name": "react-attach",
+  "version": "1.2.1",
+  "description": "Attach Redux Store to a React Original Component State",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NikolayBorisov/redux-state-connect.git"
+    "url": "git+https://github.com/NikolayBorisov/react-attach.git"
   },
   "keywords": [
     "React",
     "Redux",
     "State",
+    "Attach",
     "Subscribe",
     "Connect",
     "Transition",
@@ -23,11 +24,9 @@
   "author": "Nikolay Borisov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NikolayBorisov/redux-state-connect/issues"
+    "url": "https://github.com/NikolayBorisov/react-attach/issues"
   },
-  "homepage": "https://github.com/NikolayBorisov/redux-state-connect#readme",
-  "dependencies": {
-  },
-  "devDependencies": {
-  }
+  "homepage": "https://github.com/NikolayBorisov/react-attach#readme",
+  "dependencies": {},
+  "devDependencies": {}
 }
