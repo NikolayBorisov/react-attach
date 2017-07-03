@@ -24,6 +24,7 @@ export default function mapStoreToState(storeMap, obj, options) {
   if (isFunction(component)) {
     component(mapState);
   } else {
+    component.state = component.state || {};
     Object.assign(component.state, mapState);
   }
 
