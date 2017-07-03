@@ -10,7 +10,6 @@ export const dispatch = (...props) => store.dispatch(...props);
 export const getState = () => store.getState();
 
 export const attachStore = (s) => {
-  console.log(111, s);
   store = s;
 
   store.subscribe(() => {
