@@ -1,6 +1,6 @@
 {
   "name": "react-attach",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Attach Redux Store to a React Original Component State",
   "main": "src/index.js",
   "scripts": {
